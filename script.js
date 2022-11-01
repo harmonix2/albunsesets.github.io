@@ -80,15 +80,10 @@ _______________________________________________________________________________
 `
 
 let output = document.getElementById("output")
-let processed = ""
 let splitted = str.split("\n")
 
 console.log(splitted)
 
-splitted.forEach((el) => {processed += el + "</br>"})
+let processed = splitted.join("</br>")
 
 output.innerHTML = processed
-
-let replaced = splitted.replace(" - ",  "ABC $' CDE")
-
-output.innnerHTML = replaced
