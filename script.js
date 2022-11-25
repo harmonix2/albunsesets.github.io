@@ -83,7 +83,7 @@ _______________________________________________________________________________
 let output = document.getElementById("output")
 let splitted = str.split("\n")
 
-console.log(splitted)
+//console.log(splitted)
 
 let maskDictionary = splitted.map((line) => (line.substring(0,2) == "- ") ?
                                 { text: line.replace("- ", ""), label: "search" } :
@@ -92,21 +92,21 @@ let maskDictionary = splitted.map((line) => (line.substring(0,2) == "- ") ?
 maskDictionary = maskDictionary.filter((el) => (el.text !== ""))
                               .filter((el) => (el.text.slice(0, 3) !== "___"))
 
-console.log(maskDictionary)
+//console.log(maskDictionary)
 
 
 let formattedLists = maskDictionary.reduce((prev, item) => {
     if (item.label == "search") {
-      console.log("search")
-      return prev.concat([[item.text]])
+      //console.log("search")
+      return [...prev, [item.text]]
     }
-    console.log("rest")
+    //console.log("rest")
     let withoutLast = prev.slice(0, prev.length - 1)
-    let last = prev[prev.length - 1].concat([item.text])
+    let last = [...prev[prev.length - 1], item.text]
     return [...withoutLast, last]
   }, [])
 
-console.log(formattedLists)
+//console.log(formattedLists)
 
 let listsHTML = formattedLists.reduce((prev, item) =>
   prev + createListTemplate(item), "")
@@ -150,7 +150,8 @@ function createListTemplate(item) {
 
 
 
-/*__________________________________________________*/
+/*____________________________________________________________________________*/
+
 class ClipboardState {
   clipboardSpan
   labelToCopy
@@ -166,6 +167,7 @@ class ClipboardState {
     this.checkbox = listElement.getElementsByClassName("checkbox-class")[0]
     this.timer = undefined
     this.delayTime = delayTime
+    this.addPointer()
 
     this.clipboardSpan.onmouseenter = () => {
       switch (this.currentIconState) {
@@ -205,7 +207,8 @@ class ClipboardState {
           break;
 
         case "checked-not-left":
-          this.currentIconState = "checked-left"
+            this.currentIconState = "checked-left"
+            this.addPointer()
           break;
         default:
           console.log("onmouseleave default")
@@ -220,10 +223,12 @@ class ClipboardState {
 
         case "ready-over":
           this.copyAndSetChecked ()
+          this.removePointer()
           break;
 
         case "checked-over":
           this.copyAndSetChecked ()
+          this.removePointer()
           break;
 
         case "checked":
@@ -251,13 +256,21 @@ class ClipboardState {
     return icon
   }
 
+  addPointer () {
+    this.clipboardSpan.classList.add("pointer")
+  }
+
+  removePointer () {
+    this.clipboardSpan.classList.remove("pointer")
+  }
+
   copyAndSetChecked () {
     navigator.clipboard.writeText(this.labelToCopy.innerHTML).then(
       () => {
         this.currentIconState = "checked-not-left"
         this.replaceClipboardIcon ("check2")
 
-        console.log("writeText success")
+        console.log("Clipboard write succeess")
 
         this.timer = setTimeout (() => {
           this.currentIconState = "ready"
